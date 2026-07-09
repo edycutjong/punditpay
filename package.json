@@ -1,6 +1,6 @@
 {
   "name": "punditpay",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "A fully-local AI agent that forms a pick on-device (QVAC) and tips USD₮ over HTTP via x402 (WDK) — own keys, hard spend cap, zero cloud.",
   "type": "module",
   "license": "Apache-2.0",

@@ -1,26 +1,25 @@
 <div align="center">
-  <img src="docs/assets/icon-animated.svg" width="144" height="144" alt="PunditPay">
+  <img src="docs/assets/icon-512.png" width="144" height="144" alt="PunditPay">
   <h1>PunditPay ⚽</h1>
   <p><em>The on-device AI agent that rewards great football commentary with its own money — and can prove it never overspends.</em></p>
   <img src="docs/assets/readme-hero.png" alt="PunditPay — on-device agent, self-custodial keys, x402 tips" width="100%">
 
-  <br/><br/>
+  <br/>
 
-  <a href="https://github.com/edycutjong/punditpay/actions/workflows/ci.yml"><img src="https://github.com/edycutjong/punditpay/actions/workflows/ci.yml/badge.svg" alt="CI/CD Pipeline"></a>
-  <br/><br/>
-  <a href="https://dorahacks.io/hackathon/tether-developers-cup"><img src="https://img.shields.io/badge/DoraHacks-Tether_Developers_Cup-8b5cf6?style=for-the-badge" alt="Tether Developers Cup"></a>
-  <a href="landing/index.html"><img src="https://img.shields.io/badge/🌐_Landing-Page-06b6d4?style=for-the-badge" alt="Landing page"></a>
-  <a href="DEMO.md"><img src="https://img.shields.io/badge/🎬_3--min-Demo_Script-ef4444?style=for-the-badge" alt="Demo"></a>
+  [![Watch the 3-min demo](https://img.shields.io/badge/▶_Watch-3--min_demo-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://youtu.be/cMbJLGaXcdQ)
+  [![Landing](https://img.shields.io/badge/🌐_Landing-Page-06b6d4?style=for-the-badge)](landing/index.html)
+  [![Pitch Deck](https://img.shields.io/badge/📊_Pitch-Deck-7C3AED?style=for-the-badge)](https://edycutjong.github.io/punditpay/)
+  [![Tether Developers Cup](https://img.shields.io/badge/DoraHacks-Tether_Developers_Cup-8b5cf6?style=for-the-badge)](https://dorahacks.io/hackathon/tether-developers-cup)
 
   <br/>
 
-  <img src="https://img.shields.io/badge/QVAC-@qvac/sdk_0.14-38BDF8?style=flat" alt="QVAC">
-  <img src="https://img.shields.io/badge/WDK-@tetherto/wdk_beta.12-26A17B?style=flat" alt="WDK">
-  <img src="https://img.shields.io/badge/x402-USD₮_over_HTTP-26A17B?style=flat" alt="x402">
-  <img src="https://img.shields.io/badge/Node.js-%E2%89%A520-339933?style=flat&logo=node.js&logoColor=white" alt="Node 20+">
-  <img src="https://img.shields.io/badge/License-Apache_2.0-blue?style=flat" alt="Apache 2.0">
-  <img src="https://img.shields.io/badge/tests-268_passing-brightgreen?style=flat" alt="268 tests">
-  <img src="https://img.shields.io/badge/coverage-src_100%25_lines%2Ffunc%2Fbranch-brightgreen?style=flat" alt="100% lines, functions and branches on src">
+  ![QVAC](https://img.shields.io/badge/QVAC-@qvac/sdk_0.14-38BDF8?style=flat)
+  ![WDK](https://img.shields.io/badge/WDK-@tetherto/wdk_beta.12-26A17B?style=flat)
+  ![x402](https://img.shields.io/badge/x402-USD₮_over_HTTP-26A17B?style=flat)
+  ![Node 20+](https://img.shields.io/badge/Node.js-%E2%89%A520-339933?style=flat&logo=node.js&logoColor=white)
+  ![Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue?style=flat)
+  ![268 tests](https://img.shields.io/badge/tests-268_passing-brightgreen?style=flat)
+  [![CI/CD Pipeline](https://github.com/edycutjong/punditpay/actions/workflows/ci.yml/badge.svg)](https://github.com/edycutjong/punditpay/actions/workflows/ci.yml)
 </div>
 
 ---

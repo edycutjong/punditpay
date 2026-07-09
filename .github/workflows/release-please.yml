@@ -1,0 +1,25 @@
+name: release-please
+
+# Fully-automatic semantic versioning from Conventional Commits.
+# On every push to main, release-please opens/updates a "release PR" that bumps
+# the version (feat → minor, fix → patch, feat!/BREAKING CHANGE → major) and
+# updates CHANGELOG.md. Merge that PR and it tags vX.Y.Z + creates the GitHub
+# Release. The version is derived from commit messages — no manual edits.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: googleapis/release-please-action@v4
+        with:
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json

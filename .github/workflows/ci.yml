@@ -123,7 +123,7 @@ jobs:
             console.log('x402 total p95:', p95, 'ms');
             if (p95 > 25) { console.error('::error::x402 p95 ' + p95 + 'ms exceeds 25ms budget'); process.exit(1); }
           "
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: bench-results
           path: bench-results.json

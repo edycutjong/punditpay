@@ -1,0 +1,68 @@
+name: Deploy pitch deck to GitHub Pages
+
+# Publishes the site to GitHub Pages with the pitch deck (docs/pitch/index.html)
+# as the root. The full repo is uploaded so the deck's relative links
+# (../assets/icon.svg, etc.) keep resolving.
+#
+# ONE-TIME SETUP: repo Settings -> Pages -> Source = "GitHub Actions".
+# Deck ends up at:  https://edycutjong.github.io/punditpay/  (root redirects to docs/pitch/)
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Stage site (root -> pitch deck; keep landing + assets)
+        run: |
+          mkdir -p _site
+          rsync -a \
+            --exclude='.git' --exclude='_site' --exclude='node_modules' \
+            --exclude='coverage' --exclude='.nyc_output' --exclude='.github' \
+            ./ _site/
+          cat > _site/index.html <<'HTML'
+          <!doctype html>
+          <html lang="en">
+          <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+            <title>Redirecting to the pitch deck…</title>
+            <link rel="canonical" href="./docs/pitch/">
+            <meta http-equiv="refresh" content="0; url=./docs/pitch/">
+            <script>location.replace('./docs/pitch/' + location.search + location.hash);</script>
+          </head>
+          <body>
+            <p><a href="./docs/pitch/">View the pitch deck →</a></p>
+          </body>
+          </html>
+          HTML
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 400" width="1280" height="400" role="img" aria-label="PunditPay — on-device agent that tips with its own keys">
+  <defs>
+    <linearGradient id="ph-title" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#FFFFFF"/><stop offset="55%" stop-color="#38BDF8"/><stop offset="100%" stop-color="#26A17B"/></linearGradient>
+    <radialGradient id="ph-bg" cx="82%" cy="14%" r="95%"><stop offset="0%" stop-color="#0A2230"/><stop offset="45%" stop-color="#0B0E11"/><stop offset="100%" stop-color="#0B0E11"/></radialGradient>
+    <linearGradient id="ph-sweep" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#38BDF8" stop-opacity="0"/><stop offset="50%" stop-color="#38BDF8" stop-opacity="0.4"/><stop offset="100%" stop-color="#38BDF8" stop-opacity="0"/></linearGradient>
+    <clipPath id="ph-clip"><rect width="1280" height="400" rx="20"/></clipPath>
+    <linearGradient id="ph-gloss" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#7CD4FF" stop-opacity="0"/>
+      <stop offset="50%" stop-color="#EAFBFF" stop-opacity="0.82"/>
+      <stop offset="100%" stop-color="#7CD4FF" stop-opacity="0"/>
+    </linearGradient>
+    <clipPath id="ph-titleclip"><text x="66" y="172" font-family="'Segoe UI', system-ui, sans-serif" font-size="78" font-weight="800" letter-spacing="-2">PunditPay</text></clipPath>
+  </defs>
+  <g clip-path="url(#ph-clip)" font-family="'Segoe UI', system-ui, sans-serif">
+    <rect width="1280" height="400" fill="url(#ph-bg)"/>
+    <g stroke="#38BDF8" stroke-opacity="0.06"><path d="M0 100H1280M0 200H1280M0 300H1280"/><path d="M160 0V400M320 0V400M480 0V400M640 0V400M800 0V400M960 0V400M1120 0V400"/></g>
+    <rect x="-320" y="0" width="320" height="400" fill="url(#ph-sweep)"><animate attributeName="x" values="-320;1280" dur="5.5s" repeatCount="indefinite"/></rect>
+
+    <!-- Left brand -->
+    <text x="70" y="86" fill="#38BDF8" font-size="17" letter-spacing="4" font-weight="600">DORAHACKS · TETHER DEV CUP · QVAC × WDK</text>
+    <text x="66" y="172" fill="url(#ph-title)" font-size="78" font-weight="800" letter-spacing="-2">PunditPay</text>
+    <!-- calm data-stream gloss (slow, smooth) -->
+    <g clip-path="url(#ph-titleclip)"><g transform="skewX(-12)">
+      <rect x="-220" y="96" width="170" height="100" fill="url(#ph-gloss)"><animate attributeName="x" values="-220;600;600" keyTimes="0;0.6;1" dur="5s" repeatCount="indefinite"/></rect>
+    </g></g>
+    <text x="70" y="214" fill="#C7D0DA" font-size="23" font-weight="500">The on-device agent that forms a pick and tips with its own keys.</text>
+    <!-- reasoning line -->
+    <text x="70" y="262" fill="#98A2B0" font-size="16" font-family="monospace">&gt; 89' — that was the winner. conf 82% &gt; 70% rule <tspan fill="#26A17B">→ tip 0.10 USD₮</tspan></text>
+    <rect x="612" y="249" width="10" height="17" fill="#26A17B"><animate attributeName="opacity" values="1;0;1" dur="1s" repeatCount="indefinite"/></rect>
+    <!-- chips -->
+    <g font-family="monospace" font-size="13" fill="#98A2B0">
+      <g><rect x="70" y="290" width="150" height="34" rx="17" fill="#12161C" stroke="#1c3a4a"/><text x="86" y="312">🔒 keys on device</text></g>
+      <g><rect x="232" y="290" width="176" height="34" rx="17" fill="#12161C" stroke="#1c3a4a"/><text x="248" y="312">🧠 reasoning on device</text></g>
+      <g><rect x="420" y="290" width="132" height="34" rx="17" fill="#12161C" stroke="#1c3a4a"/><text x="436" y="312">☁ 0 cloud calls</text></g>
+    </g>
+
+    <!-- Right: x402 pipeline -->
+    <g font-family="monospace">
+      <text x="820" y="70" fill="#98A2B0" font-size="13" letter-spacing="2">x402 · ONE ROUND-TRIP</text>
+      <!-- step 1 -->
+      <g transform="translate(820,90)"><rect width="380" height="42" rx="10" fill="#12161C" stroke="#1c3a4a"/><circle cx="24" cy="21" r="7" fill="#38BDF8"><animate attributeName="opacity" values="1;0.3;0.3;1" dur="2.4s" repeatCount="indefinite"/></circle><text x="44" y="26" fill="#C7D0DA" font-size="15">1 · discover price</text></g>
+      <!-- step 2 -->
+      <g transform="translate(820,140)"><rect width="380" height="42" rx="10" fill="#12161C" stroke="#1c3a4a"/><circle cx="24" cy="21" r="7" fill="#38BDF8"><animate attributeName="opacity" values="0.3;1;0.3;0.3" dur="2.4s" repeatCount="indefinite"/></circle><text x="44" y="26" fill="#C7D0DA" font-size="15">2 · sign (self-custodial)</text></g>
+      <!-- step 3: tip sent -->
+      <g transform="translate(820,190)"><rect width="380" height="52" rx="10" fill="#0E2A1E" stroke="#26A17B" stroke-opacity="0.6"><animate attributeName="opacity" values="0.4;0.4;1;1" dur="2.4s" repeatCount="indefinite"/></rect>
+        <circle cx="24" cy="26" r="7" fill="#26A17B"><animate attributeName="opacity" values="0.3;0.3;1;1" dur="2.4s" repeatCount="indefinite"/></circle>
+        <text x="44" y="24" fill="#26A17B" font-size="15" font-weight="700">✓ TIP SENT · 0.10 USD₮</text>
+        <text x="44" y="42" fill="#6E9E8C" font-size="12">tx 0x9f…c2 · view on explorer</text></g>
+    </g>
+
+    <!-- spend-cap meter -->
+    <g transform="translate(820,300)">
+      <text x="0" y="0" fill="#98A2B0" font-family="monospace" font-size="13">SESSION SPEND CAP</text>
+      <text x="380" y="0" text-anchor="end" fill="#FFB020" font-family="monospace" font-size="13">0.40 / 1.00 USD₮</text>
+      <rect x="0" y="12" width="380" height="12" rx="6" fill="#1A1408"/>
+      <rect x="0" y="12" width="40" height="12" rx="6" fill="#FFB020"><animate attributeName="width" values="40;152;40" dur="4s" repeatCount="indefinite"/></rect>
+    </g>
+
+    <!-- tipping not betting badge -->
+    <g transform="translate(1050,44)"><rect width="188" height="34" rx="17" fill="#0A2230" stroke="#38BDF8" stroke-opacity="0.4"/>
+      <circle cx="20" cy="17" r="5" fill="#26A17B"><animate attributeName="opacity" values="1;0.2;1" dur="1.6s" repeatCount="indefinite"/></circle>
+      <text x="34" y="22" fill="#7CD4FF" font-family="monospace" font-size="12" letter-spacing="1">TIPPING · NOT BETTING</text></g>
+
+    <rect x="1" y="1" width="1278" height="398" rx="19" fill="none" stroke="#1c3a4a"/>
+  </g>
+</svg>

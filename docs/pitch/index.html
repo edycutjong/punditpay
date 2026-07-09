@@ -1,0 +1,410 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PunditPay — Pitch Deck</title>
+<meta name="description" content="PunditPay pitch deck — the on-device agent that tips with its own keys. QVAC × WDK × x402, Tether Developers Cup 2026.">
+<meta name="theme-color" content="#0B0E11">
+<link rel="icon" href="../assets/icon.svg">
+<style>
+  :root{
+    --ground:#0B0E11; --panel:#12161C; --panel-2:#161C24;
+    --line:#1F2630; --line-2:#2A3444;
+    --ai:#38BDF8; --ai-2:#7CD4FF;
+    --money:#26A17B; --money-2:#3BD69B;
+    --cap:#FFB020; --deny:#FF6B6B;
+    --ink:#E8EDF4; --muted:#8A94A6; --muted-2:#5A6374;
+    --mono:ui-monospace,"SF Mono",Menlo,"Cascadia Mono","Roboto Mono",monospace;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%}
+  body{
+    background:var(--ground); color:var(--ink); font-family:var(--sans);
+    -webkit-font-smoothing:antialiased; overflow:hidden;
+  }
+  code{font-family:var(--mono);background:rgba(232,237,244,.07);padding:.1em .35em;border-radius:4px;font-size:.92em;color:var(--ai-2)}
+  /* progress */
+  #bar{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--ai),var(--money));z-index:50;
+    width:0;transition:width .4s cubic-bezier(.4,0,.2,1)}
+  /* deck */
+  .deck{position:relative;height:100vh;width:100vw}
+  .slide{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;
+    padding:clamp(28px,6vw,96px);opacity:0;visibility:hidden;
+    transform:translateY(14px);transition:opacity .5s ease,transform .5s ease,visibility .5s;
+    max-width:1100px;margin:0 auto;overflow-y:auto}
+  .slide.active{opacity:1;visibility:visible;transform:none}
+  @media (prefers-reduced-motion:reduce){
+    .slide{transition:opacity .2s;transform:none}
+    #bar{transition:none}
+  }
+  .eyebrow{font-family:var(--mono);font-size:.72rem;letter-spacing:.28em;text-transform:uppercase;
+    color:var(--ai);margin-bottom:1.4rem;display:flex;align-items:center;gap:.7rem}
+  .eyebrow::before{content:"";width:26px;height:1px;background:var(--ai)}
+  h1{font-family:var(--mono);font-weight:700;line-height:.98;letter-spacing:-.03em;
+    font-size:clamp(2.4rem,7.4vw,5.6rem);margin:0;text-wrap:balance}
+  h2{font-family:var(--mono);font-weight:700;line-height:1.03;letter-spacing:-.02em;
+    font-size:clamp(1.8rem,4.4vw,3.1rem);margin:0 0 1.1rem;text-wrap:balance}
+  p.lead{font-size:clamp(1.02rem,2vw,1.4rem);line-height:1.5;color:var(--ink);
+    max-width:60ch;margin:.2rem 0}
+  p.sub{color:var(--muted);max-width:64ch;line-height:1.6;font-size:1.01rem}
+  .accent{color:var(--ai-2)} .money{color:var(--money-2)} .cap{color:var(--cap)} .deny{color:var(--deny)}
+  strong{color:var(--ink);font-weight:600}
+  /* chips */
+  .tag-row{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:2.2rem}
+  .chip{font-family:var(--mono);font-size:.74rem;letter-spacing:.04em;color:var(--muted);
+    border:1px solid var(--line);padding:.35rem .7rem;border-radius:100px;background:var(--panel)}
+  .chip.ai{color:var(--ai-2);border-color:#1c3a4a}
+  .chip.money{color:var(--money-2);border-color:#1c4a38}
+  .chip.cap{color:var(--cap);border-color:#4a4020}
+  /* two-col */
+  .cols{display:grid;grid-template-columns:1fr 1fr;gap:clamp(1.4rem,4vw,3.5rem);align-items:center}
+  @media (max-width:760px){.cols{grid-template-columns:1fr;gap:1.6rem}}
+  /* terminal */
+  .term{background:#070B0E;border:1px solid var(--line);border-radius:12px;overflow:hidden;
+    box-shadow:0 24px 60px -30px rgba(0,0,0,.8);font-family:var(--mono)}
+  .term .bar2{display:flex;gap:.45rem;padding:.7rem .9rem;border-bottom:1px solid var(--line);
+    align-items:center}
+  .dot{width:11px;height:11px;border-radius:50%} .r{background:#ff5f56}.y{background:#ffbd2e}.gr{background:#27c93f}
+  .term .tt{margin-left:.7rem;color:var(--muted-2);font-size:.72rem;letter-spacing:.1em}
+  .term pre{margin:0;padding:1rem 1.1rem;font-size:clamp(.6rem,1.1vw,.82rem);line-height:1.6;
+    color:var(--ink);white-space:pre-wrap;overflow-x:auto}
+  .c-ai{color:var(--ai-2)}.c-money{color:var(--money-2)}.c-cap{color:var(--cap)}
+  .c-dim{color:var(--muted)}.c-deny{color:var(--deny)}
+  /* feature list */
+  ul.feat{list-style:none;padding:0;margin:1.4rem 0 0;display:flex;flex-direction:column;gap:1.05rem}
+  ul.feat li{display:flex;gap:.9rem;line-height:1.45}
+  ul.feat .mk{font-family:var(--mono);color:var(--ai-2);flex:none;margin-top:.15rem}
+  ul.feat b{display:block;color:var(--ink);margin-bottom:.15rem;font-weight:600}
+  ul.feat span.d{color:var(--muted);font-size:.96rem}
+  /* metrics */
+  .grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-top:2rem}
+  @media (max-width:760px){.grid4{grid-template-columns:repeat(2,1fr)}}
+  .stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:1.3rem 1.1rem}
+  .stat .n{font-family:var(--mono);font-size:clamp(1.35rem,3.2vw,2.15rem);font-weight:700;
+    letter-spacing:-.02em;color:var(--money-2);font-variant-numeric:tabular-nums}
+  .stat .n.ai{color:var(--ai-2)} .stat .n.cap{color:var(--cap)}
+  .stat .l{color:var(--muted);font-size:.82rem;margin-top:.4rem;line-height:1.35}
+  /* stack table */
+  .table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .stack{width:100%;border-collapse:collapse;margin-top:1.6rem;font-size:.96rem}
+  .stack td{padding:.85rem .6rem;border-bottom:1px solid var(--line);vertical-align:top}
+  .stack tr td:first-child{font-family:var(--mono);color:var(--ai-2);white-space:nowrap;
+    width:1%;padding-right:1.4rem;letter-spacing:.02em}
+  .stack tr td:last-child{color:var(--muted)}
+  .stack b{color:var(--ink)}
+  /* magic beat */
+  .beat{display:grid;grid-template-columns:auto 1fr;gap:1rem 1.3rem;margin-top:1.8rem;font-family:var(--mono)}
+  .beat .t{color:var(--muted-2);font-size:.8rem;padding-top:.55rem;letter-spacing:.06em;
+    font-variant-numeric:tabular-nums}
+  .beat .card{background:var(--panel);border:1px solid var(--line);border-left-width:3px;
+    border-radius:8px;padding:.75rem 1rem;font-size:.9rem;line-height:1.4}
+  .beat .card.deny{border-left-color:var(--deny)}
+  .beat .card.allow{border-left-color:var(--money)}
+  .beat .card .k{color:var(--deny);font-weight:700}
+  .beat .card.allow .k{color:var(--money-2)}
+  .beat .card small{color:var(--muted);display:block;margin-top:.25rem;font-family:var(--sans);letter-spacing:0}
+  /* nav */
+  #nav{position:fixed;bottom:22px;right:26px;display:flex;align-items:center;gap:1rem;z-index:40;
+    font-family:var(--mono)}
+  .dots{display:flex;gap:.5rem}
+  .dots button{width:8px;height:8px;border-radius:50%;border:0;background:var(--line);cursor:pointer;
+    padding:0;transition:background .3s,transform .3s}
+  .dots button.on{background:var(--ai-2);transform:scale(1.35)}
+  .dots button:focus-visible{outline:2px solid var(--money-2);outline-offset:3px}
+  .count{color:var(--muted);font-size:.78rem;letter-spacing:.12em;font-variant-numeric:tabular-nums}
+  .arrows{display:flex;gap:.4rem}
+  .arrows button{background:var(--panel);border:1px solid var(--line);color:var(--ink);
+    width:34px;height:34px;border-radius:8px;cursor:pointer;font-size:1rem;line-height:1;
+    display:flex;align-items:center;justify-content:center;transition:border-color .2s,color .2s}
+  .arrows button:hover{border-color:var(--ai);color:var(--ai-2)}
+  .arrows button:focus-visible{outline:2px solid var(--ai);outline-offset:2px}
+  #hint{position:fixed;bottom:26px;left:26px;color:var(--muted-2);font-family:var(--mono);
+    font-size:.72rem;letter-spacing:.1em;z-index:40}
+  .foot{font-family:var(--mono);color:var(--muted-2);font-size:.78rem;letter-spacing:.1em;
+    margin-top:2.4rem}
+  a{color:var(--ai-2);text-decoration:none;border-bottom:1px solid #1c3a4a}
+  /* action buttons */
+  .btns{display:flex;flex-wrap:wrap;gap:.7rem;margin-top:2.4rem}
+  .btn{display:inline-flex;align-items:center;gap:.45rem;font-family:var(--mono);font-size:.82rem;
+    letter-spacing:.02em;color:var(--ink);background:var(--panel);border:1px solid var(--line);
+    padding:.62rem 1.05rem;border-radius:10px;text-decoration:none;cursor:pointer;
+    transition:border-color .2s,background .2s,transform .2s}
+  .btn:hover{border-color:var(--ai);background:var(--panel-2);transform:translateY(-1px)}
+  .btn:focus-visible{outline:2px solid var(--ai);outline-offset:2px}
+  .btn.primary{background:linear-gradient(92deg,var(--ai),var(--money));color:#04140f;
+    border-color:transparent;font-weight:700}
+  .btn.primary:hover{filter:brightness(1.08)}
+  /* ===== presentation layer (added): print · presenter (P) · overview (ESC) · contrast (C) ===== */
+  #pv{position:fixed;left:0;right:0;bottom:0;z-index:60;display:none;
+    padding:18px clamp(20px,5vw,40px) 20px;background:rgba(7,11,14,.93);backdrop-filter:blur(8px);
+    border-top:1px solid var(--line,#1F2630);font-family:var(--sans);
+    color:var(--ink,#E8EDF4);line-height:1.5;font-size:clamp(.95rem,1.5vw,1.1rem);
+    max-height:28vh;overflow:auto}
+  body.presenting #pv{display:block}
+  body.presenting #hint{display:none}
+  #pv .pv-n{display:inline-block;font-family:var(--mono);font-size:.68rem;letter-spacing:.16em;
+    color:var(--ai-2,var(--ai,#7CD4FF));margin-right:.9rem;
+    border:1px solid var(--line,#1F2630);border-radius:6px;padding:.15rem .5rem;vertical-align:middle}
+  #pv b{color:var(--ink,#fff)}
+  #ov{position:fixed;inset:0;z-index:70;display:none;background:rgba(5,8,11,.97);
+    padding:clamp(24px,5vw,64px);overflow:auto}
+  #ov.on{display:block}
+  #ov h3{font-family:var(--mono);font-size:.76rem;letter-spacing:.22em;text-transform:uppercase;
+    color:var(--muted,#8A94A6);margin:0 0 1.4rem}
+  .ov-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px}
+  .ov-card{text-align:left;cursor:pointer;background:var(--panel,#12161C);
+    border:1px solid var(--line,#1F2630);border-radius:12px;padding:1rem 1.1rem;
+    color:var(--ink,#E8EDF4);font-family:var(--sans);display:flex;flex-direction:column;
+    gap:.5rem;transition:border-color .15s,transform .15s}
+  .ov-card:hover,.ov-card:focus-visible{border-color:var(--ai-2,var(--ai,#7CD4FF));
+    transform:translateY(-2px);outline:none}
+  .ov-card .ov-n{font-family:var(--mono);font-size:.7rem;letter-spacing:.1em;color:var(--ai-2,var(--ai,#7CD4FF))}
+  .ov-card .ov-eye{font-family:var(--mono);font-size:.64rem;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--muted,#8A94A6)}
+  .ov-card .ov-t{font-size:1rem;font-weight:600;line-height:1.25}
+  body.debug-contrast .slide.active h1,body.debug-contrast .slide.active h2,
+  body.debug-contrast .slide.active p,body.debug-contrast .slide.active li,
+  body.debug-contrast .slide.active td,body.debug-contrast .slide.active .chip,
+  body.debug-contrast .slide.active .stat,body.debug-contrast .slide.active pre{
+    outline:1px solid rgba(255,64,129,.55);outline-offset:2px}
+  /* Cmd/Ctrl-P → Save as PDF → Landscape → clean 16:9 deck */
+  @media print{
+    @page{size:16in 9in landscape;margin:0}
+    html,body{height:auto;overflow:visible;background:var(--ground,#0B0E11);
+      -webkit-print-color-adjust:exact;print-color-adjust:exact}
+    #bar,#nav,#hint,#pv,#ov{display:none !important}
+    .deck{position:static;height:auto;width:auto}
+    .slide{position:relative !important;inset:auto !important;opacity:1 !important;
+      visibility:visible !important;transform:none !important;min-height:9in;overflow:hidden;
+      page-break-after:always;break-after:page;page-break-inside:avoid;break-inside:avoid;
+      -webkit-print-color-adjust:exact;print-color-adjust:exact}
+    .slide:last-child{page-break-after:auto;break-after:auto}
+  }
+</style>
+</head>
+<body>
+<div id="bar"></div>
+<div class="deck" id="deck">
+
+  <!-- 1 TITLE -->
+  <section class="slide active">
+    <div class="eyebrow">PunditPay · Tether Developers Cup 2026 · QVAC × WDK Track</div>
+    <h1>The agent that<br>tips with <span class="accent">its own keys</span>.</h1>
+    <p class="lead" style="margin-top:1.8rem">An on-device AI that reasons about the match, and pays a commentator in <span class="money">USD₮</span> over plain HTTP — bounded by a spend cap it can never override.</p>
+    <div class="tag-row">
+      <span class="chip ai">QVAC · on-device brain</span>
+      <span class="chip money">x402 · USD₮ over HTTP</span>
+      <span class="chip cap">WDK · self-custody + policy cap</span>
+      <span class="chip">268 tests · Apache-2.0</span>
+    </div>
+    <!-- action buttons — replace the video URL with the unlisted YouTube link before submitting -->
+    <div class="btns">
+      <a class="btn primary" href="https://youtu.be/PLACEHOLDER" target="_blank" rel="noopener">Watch the demo</a>
+      <a class="btn" href="https://github.com/edycutjong/punditpay" target="_blank" rel="noopener">Source on GitHub ↗</a>
+      <a class="btn" href="https://dorahacks.io/hackathon/tether-developers-cup" target="_blank" rel="noopener">Tether Dev Cup ↗</a>
+    </div>
+  </section>
+
+  <!-- 2 PROBLEM -->
+  <section class="slide">
+    <div class="eyebrow">The problem</div>
+    <h2>The tip that never happened.</h2>
+    <div class="cols">
+      <div>
+        <ul class="feat">
+          <li><span class="mk">01</span><span><b>The moment is instant.</b><span class="d">A stoppage-time comeback, a called shot — the gratitude peaks for a few seconds, then it's gone.</span></span></li>
+          <li><span class="mk">02</span><span><b>Every path kills it.</b><span class="d">An account, a card, a checkout, your data handed to a payment processor — by the time it's done, the moment already passed.</span></span></li>
+        </ul>
+      </div>
+      <div>
+        <p class="sub">"I wanted to tip the streamer who called the comeback in stoppage time — but it meant an account, a card, a checkout, and handing my data to a payment processor. The moment passed. I never tipped."</p>
+        <p class="foot">→ so we gave the agent its own wallet.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3 SOLUTION -->
+  <section class="slide">
+    <div class="eyebrow">The solution</div>
+    <h2>An agent with its own wallet, and a rule it can't break.</h2>
+    <ul class="feat">
+      <li><span class="mk">◆</span><span><b>Reasons on-device.</b><span class="d">QVAC runs a local GGUF model with tool-calling. No cloud, no API key — judgment never leaves the machine.</span></span></li>
+      <li><span class="mk">◆</span><span><b>Pays over plain HTTP.</b><span class="d">When confidence clears your rule, the model calls <code>pay_tip</code> and an x402 round-trip (402 → sign → receipt) settles a USD₮ tip — no account on either side.</span></span></li>
+      <li><span class="mk">◆</span><span><b>Bounded by its own wallet.</b><span class="d">A WDK Transaction Policy — default-deny — checks every payment before signing. Over the cap, the wallet refuses itself.</span></span></li>
+    </ul>
+  </section>
+
+  <!-- 4 MAGIC MOMENT -->
+  <section class="slide">
+    <div class="eyebrow">The magic moment</div>
+    <h2>Watch the agent's own wallet say <span class="deny">no</span>.</h2>
+    <div class="beat">
+      <div class="t">90+2'<br>conf 96%</div>
+      <div class="card allow"><span class="k">ALLOW</span> · confidence 96% vs rule &gt;70% — tipped 0.25 USD₮ to @vantage for the exact stoppage-time counter
+        <small>The model's own judgment clears the bar it was given. It signs, and the tip settles.</small></div>
+      <div class="t">FT<br>1.00 / 1.00</div>
+      <div class="card deny"><span class="k">BLOCKED</span> · <code>PolicyViolationError</code>: would exceed session cap
+        <small>Same agent, one moment later — its own wallet refuses the signature. Zero money moves. Logged in plain language, live.</small></div>
+    </div>
+    <p class="sub" style="margin-top:1.6rem">The model proposes; the policy disposes. A jailbroken brain still can't outspend the cap — the check happens <strong>in the wallet</strong>, not in a prompt.</p>
+  </section>
+
+  <!-- 5 STACK -->
+  <section class="slide">
+    <div class="eyebrow">The stack · all real, all load-bearing</div>
+    <h2>One agent. Three integrated pieces.</h2>
+    <div class="table-wrap">
+      <table class="stack">
+        <tr><td>QVAC</td><td><b>The brain, on-device.</b> <code>loadModel()</code> → <code>completion({tools})</code> tool-calling over a local GGUF model (Qwen3 1.7B default) — the model itself decides to call <code>pay_tip</code>, streamed reasoning, zero cloud calls.</td></tr>
+        <tr><td>WDK</td><td><b>Self-custody &amp; the guardrail.</b> <code>@tetherto/wdk</code> BIP-39 keys on-device; <code>registerPolicy()</code>'s default-deny Transaction Policy engine — <code>PolicyViolationError</code> is a real thrown error, not a UI message.</td></tr>
+        <tr><td>x402</td><td><b>The handshake.</b> HTTP 402 → signed payment → resource, one paid round-trip; <code>@tetherto/wdk-wallet-spark</code> settles zero-fee on Spark testnet.</td></tr>
+        <tr><td>Core</td><td><b>The discipline.</b> A framing guard fails the build on betting vocabulary anywhere in the app; a zero-cloud guard fails it on any cloud-AI host reference — enforced in CI, not just promised in docs.</td></tr>
+      </table>
+    </div>
+  </section>
+
+  <!-- 6 PROOF -->
+  <section class="slide">
+    <div class="eyebrow">Proof, not promises</div>
+    <h2>It's real, and it's green.</h2>
+    <div class="grid4">
+      <div class="stat"><div class="n">268</div><div class="l">tests passing · 62 suites, 0 failing, under 1 second</div></div>
+      <div class="stat"><div class="n ai">0</div><div class="l">high/critical vulnerabilities · <code>npm audit --audit-level=high</code></div></div>
+      <div class="stat"><div class="n cap">100%</div><div class="l">src line / function / branch coverage · CI-gated</div></div>
+      <div class="stat"><div class="n">&lt;25ms</div><div class="l">performance budget · x402 p95, enforced in CI</div></div>
+    </div>
+    <div class="term" style="margin-top:1.8rem">
+      <div class="bar2"><span class="dot r"></span><span class="dot y"></span><span class="dot gr"></span><span class="tt">punditpay — claims you can re-run</span></div>
+<pre><span class="c-dim">$ npm test</span>
+<span class="c-money"># pass 268  # fail 0  # suites 62</span>
+
+<span class="c-dim">$ npm run verify:offline</span>
+<span class="c-ai">phase 1 — reasoning: 0 network attempts across the full match</span>
+<span class="c-ai">phase 2 — settlement blocked cleanly, no spend recorded</span>
+
+<span class="c-dim">$ npm audit --audit-level=high</span>
+<span class="c-money">found 0 vulnerabilities</span></pre>
+    </div>
+    <p class="sub" style="margin-top:1.4rem">A 6-stage CI pipeline (quality → secret scan + dependency audit → build → E2E → performance → submission gate) plus a separate CodeQL scan and a TruffleHog secret sweep run on every push.</p>
+  </section>
+
+  <!-- 7 CLOSE -->
+  <section class="slide">
+    <div class="eyebrow">PunditPay</div>
+    <h1 style="font-size:clamp(2.1rem,6vw,4.6rem)">Rewarding a great call<br>should be as fast as <span class="accent">the call itself</span>.</h1>
+    <p class="lead" style="margin-top:1.8rem">Self-custodial. On-device. Bounded by its own wallet — and it just refused a payment on stage to prove it.</p>
+    <div class="tag-row">
+      <span class="chip money">Apache-2.0</span>
+      <span class="chip">v1.0.0</span>
+      <span class="chip ai">npm run demo</span>
+      <span class="chip cap">Tether Developers Cup 2026</span>
+    </div>
+    <!-- action buttons — replace the video URL with the unlisted YouTube link before submitting -->
+    <div class="btns">
+      <a class="btn primary" href="https://youtu.be/PLACEHOLDER" target="_blank" rel="noopener">Watch the demo</a>
+      <a class="btn" href="https://github.com/edycutjong/punditpay" target="_blank" rel="noopener">Source on GitHub ↗</a>
+      <a class="btn" href="https://dorahacks.io/hackathon/tether-developers-cup" target="_blank" rel="noopener">Tether Dev Cup ↗</a>
+    </div>
+    <p class="foot" style="margin-top:2.2rem">github.com/edycutjong/punditpay · built by Edy Cu</p>
+  </section>
+
+</div>
+
+<div id="hint">← / → · space &nbsp;·&nbsp; P notes · ESC grid · C contrast</div>
+<div id="nav">
+  <div class="dots" id="dots"></div>
+  <span class="count" id="count">01 / 07</span>
+  <div class="arrows"><button id="prev" aria-label="Previous slide">‹</button><button id="next" aria-label="Next slide">›</button></div>
+</div>
+
+<script>
+(function(){
+  var slides=[].slice.call(document.querySelectorAll('.slide'));
+  var i=0, n=slides.length;
+  var bar=document.getElementById('bar'), count=document.getElementById('count'),
+      dotsWrap=document.getElementById('dots');
+  slides.forEach(function(_,k){
+    var b=document.createElement('button'); b.setAttribute('aria-label','Go to slide '+(k+1));
+    b.addEventListener('click',function(){go(k)}); dotsWrap.appendChild(b);
+  });
+  var dots=[].slice.call(dotsWrap.children);
+  function pad(x){return (x<9?'0':'')+(x+1)}
+  function go(k){
+    i=Math.max(0,Math.min(n-1,k));
+    slides.forEach(function(s,j){s.classList.toggle('active',j===i)});
+    dots.forEach(function(d,j){d.classList.toggle('on',j===i)});
+    bar.style.width=((i)/(n-1)*100)+'%';
+    count.textContent=pad(i)+' / '+pad(n-1);
+  }
+  function next(){go(i+1)} function prev(){go(i-1)}
+  document.getElementById('next').addEventListener('click',next);
+  document.getElementById('prev').addEventListener('click',prev);
+  document.addEventListener('keydown',function(e){
+    if(e.key==='ArrowRight'||e.key===' '||e.key==='PageDown'){e.preventDefault();next()}
+    else if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();prev()}
+    else if(e.key==='Home'){go(0)} else if(e.key==='End'){go(n-1)}
+  });
+  // click right/left half to advance (ignore taps on nav or links)
+  document.getElementById('deck').addEventListener('click',function(e){
+    if(e.target.closest('#nav')||e.target.closest('a'))return;
+    (e.clientX > window.innerWidth/2 ? next : prev)();
+  });
+  // swipe
+  var x0=null;
+  addEventListener('touchstart',function(e){x0=e.touches[0].clientX},{passive:true});
+  addEventListener('touchend',function(e){
+    if(x0===null)return; var dx=e.changedTouches[0].clientX-x0;
+    if(Math.abs(dx)>40){dx<0?next():prev()} x0=null;
+  },{passive:true});
+  go(0);
+})();
+</script>
+
+<script>
+/* presentation layer (added): presenter notes (P) · overview (ESC) · contrast (C) · print — decoupled from the deck engine above */
+(function(){
+  var NOTES=[
+    "Hook: <b>an agent that tips with its own keys.</b> It reasons on-device and pays over plain HTTP &mdash; no account, no card. The wow is a spend cap it can never override.",
+    "Tell the human story &mdash; the tip that never happened, because every path (account, card, checkout) outlives the moment. Read the quote; it is the whole pitch in one sentence.",
+    "Three beats: reasons on-device via QVAC; pays over x402 (402 &rarr; sign &rarr; receipt); bounded by a default-deny WDK policy. Say it once: <b>the rule lives in the wallet, not the prompt.</b>",
+    "The peak: same agent, one minute apart &mdash; ALLOW at 96% confidence, then BLOCKED by PolicyViolationError at the cap. Land it: <b>the model proposes, the policy disposes</b> &mdash; a jailbroken brain still can&rsquo;t outspend the cap.",
+    "All three pieces are real and load-bearing: QVAC brain, WDK self-custody plus policy, x402 handshake. Point out the CI guards that fail the build on betting vocabulary or any cloud host &mdash; discipline enforced, not promised.",
+    "268 green tests under a second, 100% src coverage, zero high vulns, x402 p95 under 25ms &mdash; all CI-gated. This is &lsquo;real use of the platform&rsquo; a judge can re-run live.",
+    "Land it: rewarding a great call should be as fast as the call itself &mdash; and it just refused a payment on stage to prove the guardrail is real."
+  ];
+  var slides=[].slice.call(document.querySelectorAll('.slide'));
+  var dots=[].slice.call(document.querySelectorAll('#dots button'));
+  var n=slides.length;
+  function esc(s){var d=document.createElement('div');d.textContent=s||'';return d.innerHTML;}
+  function pad(x){return (x<9?'0':'')+(x+1);}
+  var pv=document.createElement('div'); pv.id='pv'; document.body.appendChild(pv);
+  var ov=document.createElement('div'); ov.id='ov';
+  ov.innerHTML='<h3>All slides &mdash; click to jump &nbsp;·&nbsp; ESC to close</h3>';
+  var grid=document.createElement('div'); grid.className='ov-grid';
+  slides.forEach(function(s,k){
+    var t=((s.querySelector('h1,h2')||{}).textContent||'').trim()||('Slide '+(k+1));
+    var eye=((s.querySelector('.eyebrow,.kicker')||{}).textContent||'').trim();
+    var b=document.createElement('button'); b.className='ov-card'; b.type='button';
+    b.innerHTML='<span class="ov-n">'+pad(k)+' / '+pad(n-1)+'</span>'+(eye?'<span class="ov-eye">'+esc(eye)+'</span>':'')+'<span class="ov-t">'+esc(t)+'</span>';
+    b.addEventListener('click',function(){ if(dots[k]){dots[k].click();} ov.classList.remove('on'); });
+    grid.appendChild(b);
+  });
+  ov.appendChild(grid); document.body.appendChild(ov);
+  function idx(){for(var j=0;j<n;j++){if(slides[j].classList.contains('active')){return j;}}return 0;}
+  function syncNotes(){var i=idx(); pv.innerHTML='<span class="pv-n">SPEAKER · '+pad(i)+' / '+pad(n-1)+'</span>'+(NOTES[i]||'<span style="opacity:.55">(no note)</span>');}
+  var mo=new MutationObserver(syncNotes);
+  slides.forEach(function(s){mo.observe(s,{attributes:true,attributeFilter:['class']});});
+  syncNotes();
+  document.addEventListener('keydown',function(e){
+    if(e.key==='Escape'){e.preventDefault();ov.classList.toggle('on');return;}
+    var k=(e.key||'').toLowerCase();
+    if(k==='p'){e.preventDefault();document.body.classList.toggle('presenting');}
+    else if(k==='c'){e.preventDefault();document.body.classList.toggle('debug-contrast');}
+  },true);
+  ov.addEventListener('click',function(e){if(e.target===ov){ov.classList.remove('on');}});
+})();
+</script>
+</body>
+</html>

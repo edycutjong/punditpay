@@ -1,0 +1,21 @@
+# Dependencies
+node_modules/
+
+# Environment — keys never leave the device, and never enter git
+.env
+.env.*
+!.env.example
+
+# Runtime artifacts
+var/
+*.log
+bench-results.json
+coverage/
+
+# Downloaded model weights (GGUF/ONNX land in the QVAC cache, but just in case)
+models/
+*.gguf
+*.onnx
+
+# OS noise
+.DS_Store

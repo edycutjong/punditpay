@@ -1,0 +1,46 @@
+{
+  "name": "punditpay",
+  "version": "1.0.0",
+  "description": "A fully-local AI agent that forms a pick on-device (QVAC) and tips USD₮ over HTTP via x402 (WDK) — own keys, hard spend cap, zero cloud.",
+  "type": "module",
+  "license": "Apache-2.0",
+  "author": "Edy Cu",
+  "engines": {
+    "node": ">=20"
+  },
+  "bin": {
+    "punditpay": "./bin/punditpay.js"
+  },
+  "scripts": {
+    "start": "node bin/punditpay.js agent --console",
+    "server": "node bin/punditpay.js server",
+    "demo": "node scripts/demo.js",
+    "keygen": "node scripts/keygen.js",
+    "test": "node --test",
+    "test:coverage": "node --test --experimental-test-coverage --test-coverage-exclude=\"test/**\" --test-coverage-exclude=\"scripts/**\" --test-coverage-exclude=\"bin/**\"",
+    "coverage": "node --test --experimental-test-coverage --test-coverage-exclude=\"test/**\" --test-coverage-exclude=\"scripts/**\" --test-coverage-exclude=\"bin/**\" --test-coverage-lines=100 --test-coverage-functions=100 --test-coverage-branches=100",
+    "lint": "node scripts/lint.js",
+    "bench": "node scripts/bench.js",
+    "verify:offline": "node scripts/verify_offline.js",
+    "check:readiness": "node scripts/check_submission_readiness.js",
+    "audit": "npm audit --audit-level=high",
+    "ci": "npm run lint && npm test && npm run coverage && npm run verify:offline && npm run check:readiness"
+  },
+  "dependencies": {
+    "@qvac/sdk": "0.14.1",
+    "@tetherto/wdk": "1.0.0-beta.12",
+    "@tetherto/wdk-wallet-spark": "1.0.0-beta.22"
+  },
+  "keywords": [
+    "qvac",
+    "wdk",
+    "x402",
+    "usdt",
+    "on-device-ai",
+    "self-custodial",
+    "agent",
+    "tipping",
+    "football",
+    "tether"
+  ]
+}

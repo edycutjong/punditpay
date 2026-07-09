@@ -1,0 +1,27 @@
+# Friction Log — building on QVAC + WDK (July 2026)
+
+The honest developer-experience notes a sponsor engineer would actually want. Versions: `@qvac/sdk@0.14.1`, `@tetherto/wdk@1.0.0-beta.12`, `@tetherto/wdk-wallet-spark@1.0.0-beta.22`, Node 22 on macOS/arm64.
+
+## Things that were better than expected
+
+1. **WDK's Transaction Policy engine is genuinely production-shaped.** Default-deny on governed accounts, `simulate.*` dry-runs, structured `PolicyViolationError` with `policyId/ruleName/reason` — we mirrored its semantics for our pre-flight layer and the mapping was 1:1. This is the best "agent guardrail" primitive we've used from any wallet SDK.
+2. **`npm install` on all three SDKs just worked** (294 packages, 34 s, zero native-build failures on arm64).
+3. **QVAC's docs ship a consolidated `llms-full.txt`** — the entire API surface in one plaintext file. Every SDK should do this.
+4. **Model constants** (`LLAMA_TOOL_CALLING_1B_INST_Q4_K` etc.) turn "which GGUF do I download from where" into one import. There's even a dedicated tool-calling 1B — exactly the right size for an always-on agent.
+5. **Spark's zero-fee transfers** make the whole cent-sized-tip economy plausible; `WalletAccountReadOnlySpark(address)` lets a server verify signatures + tx existence with no keys at all.
+
+## Things that cost us time (with fixes)
+
+1. **WDK default-deny nearly ate our x402 signatures.** `sign` is a governed operation, so registering only a `sendTransaction` cap rule silently breaks message signing with `no-applicable-rule`. Fix: an explicit ALLOW rule for `sign` (moves no funds). Documented in `buildWdkPolicy()`. *Suggestion: docs could flag which OPERATIONS most integrations forget.*
+2. **`@tetherto/wdk-mcp-toolkit` on npm is a `0.0.0` placeholder** while docs describe an MCP toolkit. We shipped our own `SKILL.md` with MCP-shaped schemas instead. *Suggestion: publish the real package or mark the name reserved.*
+3. **Two completion() API generations coexist in QVAC docs** — the legacy `tokenStream`/`toolCallStream`/`await result.toolCalls` surfaces and the newer `events`/`final` stream. Both work; knowing which is canonical took reading `llms-full.txt` twice. We used the legacy tool-calling surface because the docs' own tool example does.
+4. **Spark ≠ USD₮ (yet, in the wallet package).** `wdk-wallet-spark` moves sats (LBTC); tips are USD₮-denominated, so we settle at a fixed disclosed demo rate. *Suggestion: a `wdk-wallet-spark` token-transfer surface (or a documented USD₮-on-Spark path) would remove the last asterisk from "agent pays USD₮."*
+5. **`signTransaction` throws on Spark by design** (FROST/statechain collaborative signing) — correct, but surprising until you read the `.d.ts`. The error message is good; docs mention it only deep in the API reference.
+6. **Node's `--test test/` footgun**: `node --test test/` (with trailing slash) fails module resolution on Node 22; bare `node --test` auto-discovery is the way. Not a Tether issue, but it'll bite judges running suites by hand.
+7. **Spark TESTNET endpoint access (live finding).** With `wdk-wallet-spark@beta.22` (`js-spark-sdk/0.8.8` underneath), `network:'TESTNET'` derives keys fine (identity pubkey produced) but the operator authentication handshake dials `::1:8536` — a local ingress — and fails `ECONNREFUSED` on a machine that isn't running Spark infra. Our adapter is correct per the documented API; reaching Spark's public testnet appears to need either newer SDK endpoint config or provisioned access. Disclosed in README; the demo's default path never depends on it. *Suggestion: document the exact reachable endpoints per network for the current SDK version.*
+8. **Tool definitions MUST carry top-level `type: 'function'` (live finding, root-caused in SDK source).** We passed flat `{name, description, parameters}` JSON-schema tools; the model kept emitting calls with missing/empty arguments — and its own chain-of-thought said why: *"the pay_tip function has parameters as an empty object."* Root cause in `dist/utils/tool-helpers.js`: `validateTools()` first tries the full-Tool schema (which requires `type: 'function'`); on failure it assumes `parameters` is a **Zod** schema and reads `.shape` — undefined for plain JSON schema — so the model receives `parameters: {}`. One field fixed everything: with `type: 'function'` the real `QWEN3_1_7B_INST_Q4` played the ENTIRE scripted match to the exact engineered outcome (4 tips + 1 pick = 1.00 USD₮, hero tip with a model-authored reason, over-cap attempt blocked). *Suggestion: `validateTools` could throw on a non-Zod `parameters` instead of silently emitting `{}` — this one is a silent money-path degrade for agent builders.*
+9. **Small-model comparison, measured on the same moment** (M-series GPU, TTFT 220–620 ms, models cached after one download): `qwen-600m` (0.4 GB, 213 tok/s) → empty-args calls; `LLAMA_TOOL_CALLING_1B` (0.8 GB, 196 tok/s) → narrates the call in prose, not parseable even with `toolDialect:'pythonic'`; **`QWEN3_1_7B_INST_Q4` (1.1 GB, 142 tok/s) → correct structured calls**, now the default. Occasional argument-NAME drift remains (`creator` for `to`) — handled by alias normalization in the adapter; values are never invented, and malformed calls still die at schema validation with zero spend.
+
+## Net verdict
+
+Two SDKs, one afternoon to a working self-custodial paying agent with in-wallet guardrails — the primitives compose the way the pitch says they do. The friction is beta-edge paperwork (placeholder package, doc drift), not architecture.

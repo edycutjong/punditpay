@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-label="PunditPay">
+  <defs>
+    <linearGradient id="pp-hex" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#38BDF8"/><stop offset="1" stop-color="#7CD4FF"/></linearGradient>
+    <radialGradient id="pp-coin" cx="50%" cy="42%" r="60%"><stop offset="0" stop-color="#2ec18f"/><stop offset="1" stop-color="#155C43"/></radialGradient>
+    <radialGradient id="pp-glow" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#26A17B" stop-opacity=".5"/><stop offset="1" stop-color="#26A17B" stop-opacity="0"/></radialGradient>
+  </defs>
+  <rect x="16" y="16" width="480" height="480" rx="112" fill="#0B0E11"/>
+  <rect x="16.5" y="16.5" width="479" height="479" rx="111.5" fill="none" stroke="#1c3a4a" stroke-width="1"/>
+
+  <!-- money glow -->
+  <circle cx="256" cy="256" r="120" fill="url(#pp-glow)">
+    <animate attributeName="opacity" values="0.6;1;0.6" dur="3s" repeatCount="indefinite"/>
+  </circle>
+  <!-- x402 tip pulse emitted from the coin -->
+  <circle cx="256" cy="256" r="90" fill="none" stroke="#38BDF8" stroke-width="4">
+    <animate attributeName="r" values="90;152" dur="2.4s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.85;0" dur="2.4s" repeatCount="indefinite"/>
+  </circle>
+
+  <!-- agent hexagon -->
+  <path d="M256 96 L392 176 V336 L256 416 L120 336 V176 Z" fill="none" stroke="url(#pp-hex)" stroke-width="18" stroke-linejoin="round">
+    <animate attributeName="opacity" values="0.7;1;0.7" dur="2.8s" repeatCount="indefinite"/>
+  </path>
+  <!-- money coin + USD₮ mark -->
+  <circle cx="256" cy="256" r="88" fill="url(#pp-coin)"/>
+  <g stroke="#EAFBF4" stroke-width="18" stroke-linecap="round">
+    <line x1="212" y1="222" x2="300" y2="222"/>
+    <line x1="256" y1="222" x2="256" y2="300"/>
+  </g>
+  <!-- reasoning nodes twinkle in sequence -->
+  <g fill="#38BDF8">
+    <circle cx="256" cy="96" r="15"><animate attributeName="opacity" values="0.3;1;0.3" dur="1.8s" begin="0s" repeatCount="indefinite"/></circle>
+    <circle cx="392" cy="336" r="12"><animate attributeName="opacity" values="0.3;1;0.3" dur="1.8s" begin="0.6s" repeatCount="indefinite"/></circle>
+    <circle cx="120" cy="336" r="12"><animate attributeName="opacity" values="0.3;1;0.3" dur="1.8s" begin="1.2s" repeatCount="indefinite"/></circle>
+  </g>
+</svg>

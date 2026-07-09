@@ -1,0 +1,332 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PunditPay — Agent Console</title>
+<!-- Fully self-contained: no CDNs, no fonts, no external requests.
+     The console makes the same promise as the agent: nothing leaves this machine. -->
+<style>
+  :root{
+    --canvas:#0B0E11; --panel:#12161C; --panel-2:#161B23; --line:#1F2630;
+    --ink:#E8EDF4; --ink-dim:#8A94A6; --ink-faint:#5A6374;
+    --ai:#38BDF8; --money:#26A17B; --cap:#FFB020; --blocked:#FF4D4F;
+    --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--canvas);color:var(--ink);font-family:var(--sans);height:100vh;display:flex;overflow:hidden}
+
+  /* ── left nav ── */
+  nav{width:220px;min-width:220px;background:var(--panel);border-right:1px solid var(--line);display:flex;flex-direction:column;padding:20px 14px}
+  .logo{display:flex;align-items:center;gap:10px;padding:4px 8px 18px;border-bottom:1px solid var(--line)}
+  .logo .mark{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,#0e3b4e,#123a30);display:grid;place-items:center;font-size:17px}
+  .logo b{font-size:15px;letter-spacing:.3px}
+  .logo small{display:block;color:var(--ink-faint);font-size:10px;font-weight:400;letter-spacing:.6px;text-transform:uppercase}
+  .nav-items{margin-top:16px;display:flex;flex-direction:column;gap:4px}
+  .nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;color:var(--ink-dim);cursor:pointer;font-size:13.5px;border:1px solid transparent;background:none;text-align:left;font-family:var(--sans)}
+  .nav-item:hover{color:var(--ink);background:var(--panel-2)}
+  .nav-item.active{color:var(--ink);background:var(--panel-2);border-color:var(--line)}
+  .nav-item .dot{width:7px;height:7px;border-radius:50%;background:var(--ink-faint)}
+  .nav-item.active .dot{background:var(--ai);box-shadow:0 0 8px var(--ai)}
+  .nav-spacer{flex:1}
+  .chips{display:flex;flex-direction:column;gap:8px;padding-top:14px;border-top:1px solid var(--line)}
+  .chip{font-size:11px;color:var(--ink-dim);background:var(--panel-2);border:1px solid var(--line);padding:6px 10px;border-radius:999px;display:flex;gap:7px;align-items:center}
+  .chip i{font-style:normal}
+
+  /* ── main ── */
+  main{flex:1;display:flex;flex-direction:column;min-width:0}
+  header{padding:14px 22px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:14px;background:var(--panel)}
+  header h1{font-size:15px;font-weight:600}
+  header .sub{color:var(--ink-faint);font-size:12px}
+  .live{margin-left:auto;display:flex;align-items:center;gap:7px;font-size:11.5px;color:var(--ink-dim)}
+  .live .pulse{width:8px;height:8px;border-radius:50%;background:var(--money);animation:pulse 1.6s infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.25}}
+  .view{flex:1;overflow:hidden;display:none}
+  .view.active{display:flex}
+
+  /* ── terminal view ── */
+  #view-terminal{gap:16px;padding:16px 22px}
+  .stream-panel{flex:1.5;background:var(--panel);border:1px solid var(--line);border-radius:12px;display:flex;flex-direction:column;min-width:0}
+  .panel-head{padding:11px 16px;border-bottom:1px solid var(--line);font-size:11.5px;letter-spacing:1.1px;text-transform:uppercase;color:var(--ink-faint);display:flex;gap:8px;align-items:center}
+  .stream{flex:1;overflow-y:auto;padding:14px 16px;font-family:var(--mono);font-size:12.5px;line-height:1.75}
+  .stream .ln{white-space:pre-wrap;word-break:break-word}
+  .ln.info{color:var(--ink-dim)}
+  .ln.reasoning{color:var(--ai)}
+  .ln.decision{color:var(--cap)}
+  .ln.payment{color:var(--money);font-weight:600}
+  .ln.blocked{color:var(--blocked);font-weight:700}
+  .ln.error{color:var(--blocked)}
+  .cursor{display:inline-block;width:8px;height:14px;background:var(--ai);vertical-align:-2px;animation:blink 1s steps(1) infinite}
+  @keyframes blink{50%{opacity:0}}
+  .right-col{flex:1;display:flex;flex-direction:column;gap:16px;min-width:340px;max-width:420px}
+
+  /* x402 card */
+  .x402{background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  .x402 .steps{padding:16px;display:flex;flex-direction:column;gap:0}
+  .step{display:flex;gap:12px;align-items:flex-start;padding:9px 0;position:relative}
+  .step .bullet{width:26px;height:26px;border-radius:50%;border:1.5px solid var(--line);display:grid;place-items:center;font-size:12px;color:var(--ink-faint);background:var(--panel-2);z-index:1;transition:all .3s}
+  .step:not(:last-child)::after{content:"";position:absolute;left:13px;top:34px;bottom:-6px;width:1.5px;background:var(--line)}
+  .step .lbl{font-size:13px;font-weight:600}
+  .step .det{font-size:11.5px;color:var(--ink-faint);font-family:var(--mono);margin-top:2px;word-break:break-all}
+  .step.done .bullet{border-color:var(--money);color:var(--money);background:rgba(38,161,123,.12)}
+  .step.doing .bullet{border-color:var(--ai);color:var(--ai);box-shadow:0 0 10px rgba(56,189,248,.4)}
+  .sent-flash{margin:0 16px 16px;padding:12px 14px;border-radius:9px;background:rgba(38,161,123,.13);border:1px solid rgba(38,161,123,.45);font-family:var(--mono);font-size:12.5px;color:var(--money);display:none}
+  .sent-flash.blocked{background:rgba(255,77,79,.1);border-color:rgba(255,77,79,.5);color:var(--blocked)}
+  .sent-flash.show{display:block;animation:flashIn .35s ease-out}
+  @keyframes flashIn{from{transform:translateY(6px);opacity:0}to{transform:none;opacity:1}}
+  .sent-flash a{color:inherit}
+
+  /* cap meter */
+  .capbox{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:0 0 16px}
+  .cap-meter{display:flex;gap:4px;padding:14px 16px 8px}
+  .seg{flex:1;height:14px;border-radius:3px;background:var(--panel-2);border:1px solid var(--line);transition:all .4s}
+  .seg.fill{background:linear-gradient(180deg,#FFC24D,#E89A0C);border-color:#B97F14;box-shadow:0 0 6px rgba(255,176,32,.35)}
+  .seg.over{background:linear-gradient(180deg,#FF6B6D,#D93335);border-color:#A62628}
+  .cap-line{padding:2px 16px 0;font-family:var(--mono);font-size:12.5px;color:var(--cap)}
+  .cap-line b{font-size:15px}
+  .cap-sub{padding:4px 16px 0;font-size:11.5px;color:var(--ink-faint)}
+
+  /* ── guardrails view ── */
+  #view-guardrails{padding:22px;gap:16px;overflow-y:auto;flex-direction:row;align-items:flex-start;flex-wrap:wrap}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;flex:1;min-width:320px}
+  .card h3{font-size:13px;letter-spacing:1px;text-transform:uppercase;color:var(--ink-faint);margin-bottom:14px}
+  .rule-row{display:flex;justify-content:space-between;align-items:center;padding:11px 0;border-bottom:1px solid var(--line);font-size:13.5px}
+  .rule-row:last-child{border:none}
+  .rule-row .val{font-family:var(--mono);color:var(--cap);font-weight:600}
+  .thresh-track{position:relative;height:8px;background:var(--panel-2);border-radius:99px;border:1px solid var(--line);margin:18px 0 8px}
+  .thresh-fill{position:absolute;inset:0;width:70%;background:linear-gradient(90deg,#1a6d8f,var(--ai));border-radius:99px}
+  .thresh-knob{position:absolute;top:50%;left:70%;transform:translate(-50%,-50%);width:20px;height:20px;border-radius:50%;background:var(--ai);border:3px solid var(--canvas);box-shadow:0 0 10px rgba(56,189,248,.6)}
+  .guard-visual{margin-top:8px;padding:18px;border:1.5px dashed var(--cap);border-radius:12px;text-align:center;background:rgba(255,176,32,.04)}
+  .guard-visual .agent-glyph{font-size:30px}
+  .guard-visual p{font-size:12.5px;color:var(--ink-dim);margin-top:8px;line-height:1.5}
+  .policy-rules{font-family:var(--mono);font-size:11.5px;line-height:1.9;color:var(--ink-dim)}
+  .policy-rules .allow{color:var(--money)}
+  .policy-rules .deny{color:var(--blocked)}
+  .verdict{margin-top:10px;padding:10px 12px;border-radius:8px;background:var(--panel-2);border:1px solid var(--line);font-family:var(--mono);font-size:12px}
+
+  /* ── history view ── */
+  #view-history{padding:22px;overflow-y:auto;flex-direction:column}
+  table{width:100%;border-collapse:collapse;font-size:12.5px}
+  th{color:var(--ink-faint);text-transform:uppercase;font-size:10.5px;letter-spacing:1px;text-align:left;padding:9px 12px;border-bottom:1px solid var(--line)}
+  td{padding:11px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+  tr.pay td:first-child{color:var(--money)}
+  tr.blk{background:rgba(255,77,79,.05)}
+  tr.blk td{color:var(--blocked)}
+  td.mono{font-family:var(--mono);font-size:11.5px;color:var(--ink-dim)}
+  td .amt{font-family:var(--mono);font-weight:700}
+  tr.pay .amt{color:var(--money)}
+  .empty{color:var(--ink-faint);padding:30px;text-align:center;font-size:13px}
+  a.tx{color:var(--ai);text-decoration:none;font-family:var(--mono);font-size:11.5px}
+  a.tx:hover{text-decoration:underline}
+</style>
+</head>
+<body>
+  <nav>
+    <div class="logo">
+      <div class="mark">⚽</div>
+      <div><b>PunditPay</b><small>agent console</small></div>
+    </div>
+    <div class="nav-items">
+      <button class="nav-item active" data-view="terminal"><span class="dot"></span>Terminal</button>
+      <button class="nav-item" data-view="guardrails"><span class="dot"></span>Guardrails</button>
+      <button class="nav-item" data-view="history"><span class="dot"></span>History</button>
+    </div>
+    <div class="nav-spacer"></div>
+    <div class="chips">
+      <span class="chip"><i>🔒</i> Keys on device</span>
+      <span class="chip"><i>🧠</i> Reasoning on device</span>
+      <span class="chip"><i>☁️</i> 0 cloud calls</span>
+    </div>
+  </nav>
+
+  <main>
+    <header>
+      <h1 id="hdr-title">Cup Final — Astora FC vs Meridia United</h1>
+      <span class="sub" id="hdr-mode">connecting…</span>
+      <span class="live"><span class="pulse"></span> live session</span>
+    </header>
+
+    <!-- ── 1 · Terminal ── -->
+    <section class="view active" id="view-terminal">
+      <div class="stream-panel">
+        <div class="panel-head">⚡ live reasoning stream — on-device</div>
+        <div class="stream" id="stream"><span class="cursor"></span></div>
+      </div>
+      <div class="right-col">
+        <div class="x402">
+          <div class="panel-head">💸 x402 payment — one round-trip</div>
+          <div class="steps">
+            <div class="step" id="st-discover"><div class="bullet">1</div><div><div class="lbl">Discover price</div><div class="det" id="st-discover-det">GET → HTTP 402 + offer</div></div></div>
+            <div class="step" id="st-sign"><div class="bullet">2</div><div><div class="lbl">Sign (self-custodial)</div><div class="det" id="st-sign-det">keys never leave the device</div></div></div>
+            <div class="step" id="st-receipt"><div class="bullet">3</div><div><div class="lbl">Receipt</div><div class="det" id="st-receipt-det">resource + X-PAYMENT-RESPONSE</div></div></div>
+          </div>
+          <div class="sent-flash" id="flash"></div>
+        </div>
+        <div class="capbox">
+          <div class="panel-head">⛽ transaction-policy spend cap</div>
+          <div class="cap-meter" id="capmeter"></div>
+          <div class="cap-line">Session: <b id="cap-spent">0.00</b> / <span id="cap-total">1.00</span> USD₮</div>
+          <div class="cap-sub" id="cap-sub">— tips left · hard cap enforced before every signature</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 2 · Guardrails ── -->
+    <section class="view" id="view-guardrails">
+      <div class="card">
+        <h3>Set the rules — bounded autonomy</h3>
+        <div class="rule-row"><span>Confidence threshold</span><span class="val" id="g-thresh">70%</span></div>
+        <div class="thresh-track"><div class="thresh-fill" id="g-fill"></div><div class="thresh-knob" id="g-knob"></div></div>
+        <div class="cap-sub" style="padding:0">the agent tips only when its confidence clears this bar</div>
+        <div class="rule-row" style="margin-top:12px"><span>Per-session cap</span><span class="val" id="g-cap">1.00 USD₮</span></div>
+        <div class="rule-row"><span>Max tips per session</span><span class="val" id="g-maxtips">6</span></div>
+        <div class="rule-row"><span>Per-tip maximum</span><span class="val" id="g-maxtip">0.25 USD₮</span></div>
+        <div class="rule-row"><span>Pick budget</span><span class="val" id="g-pick">1 × 0.25 USD₮</span></div>
+        <div class="guard-visual">
+          <div class="agent-glyph">🤖</div>
+          <p><b>Transaction Policy:</b> the agent can act, but can never exceed your cap.<br>
+          Enforced twice — pre-flight in the agent, and inside the WDK wallet itself.</p>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Active policy — default-deny engine</h3>
+        <div class="policy-rules" id="g-rules">
+          <div><span class="allow">ALLOW</span> pay_tip · amount ≤ per-tip max · Σsession + amount ≤ cap · tips &lt; max</div>
+          <div><span class="allow">ALLOW</span> buy_pick · one pick · price ≤ budget · Σsession + price ≤ cap</div>
+          <div><span class="allow">ALLOW</span> sign · x402 payment signatures (moves no funds)</div>
+          <div><span class="deny">DENY</span> pay_tip · would exceed session cap</div>
+          <div><span class="deny">DENY</span> pay_tip · single tip above per-tip max</div>
+          <div><span class="deny">DENY</span> pay_tip · tip count exhausted</div>
+          <div><span class="deny">DENY</span> * · anything else — no-applicable-rule (default-deny)</div>
+        </div>
+        <div class="verdict" id="g-verdict">last policy verdict: —</div>
+      </div>
+    </section>
+
+    <!-- ── 3 · History ── -->
+    <section class="view" id="view-history">
+      <table>
+        <thead><tr><th style="width:60px">min</th><th style="width:90px">amount</th><th>action</th><th style="width:190px">tx</th></tr></thead>
+        <tbody id="hist-body"></tbody>
+      </table>
+      <div class="empty" id="hist-empty">no payments yet — the agent is still watching the match</div>
+    </section>
+  </main>
+
+<script>
+  const $ = (id) => document.getElementById(id);
+
+  // ── nav ──
+  document.querySelectorAll('.nav-item').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.nav-item').forEach((b) => b.classList.remove('active'));
+      document.querySelectorAll('.view').forEach((v) => v.classList.remove('active'));
+      btn.classList.add('active');
+      $('view-' + btn.dataset.view).classList.add('active');
+    });
+  });
+
+  // ── cap meter: 20 segments ──
+  const SEGS = 20;
+  for (let i = 0; i < SEGS; i++) $('capmeter').appendChild(Object.assign(document.createElement('div'), { className: 'seg' }));
+
+  function renderState(s) {
+    $('hdr-mode').textContent = `${s.brain.label} · ${s.wallet.network}`;
+    $('cap-spent').textContent = s.spent;
+    $('cap-total').textContent = s.cap;
+    $('cap-sub').textContent = `${s.tipsLeft} tips left · hard cap enforced before every signature`;
+    const fill = Math.round((Math.min(s.spentPct, 100) / 100) * SEGS);
+    [...$('capmeter').children].forEach((seg, i) => {
+      seg.className = 'seg' + (i < fill ? ' fill' : '');
+    });
+    $('g-thresh').textContent = s.rule.confidenceThreshold + '%';
+    $('g-fill').style.width = s.rule.confidenceThreshold + '%';
+    $('g-knob').style.left = s.rule.confidenceThreshold + '%';
+    $('g-cap').textContent = s.limits.sessionCap + ' USD₮';
+    $('g-maxtips').textContent = s.limits.maxTips;
+    $('g-maxtip').textContent = s.limits.maxTip + ' USD₮';
+    $('g-pick').textContent = `${s.limits.maxPicks} × ${s.limits.maxPick} USD₮`;
+  }
+
+  // ── reasoning stream ──
+  const stream = $('stream');
+  function addLine(kind, text) {
+    const cursor = stream.querySelector('.cursor');
+    const ln = document.createElement('div');
+    ln.className = 'ln ' + kind;
+    ln.textContent = text;
+    stream.insertBefore(ln, cursor);
+    stream.scrollTop = stream.scrollHeight;
+  }
+
+  // ── x402 card animation ──
+  let flashTimer = null;
+  function playPayment(entry) {
+    const steps = ['st-discover', 'st-sign', 'st-receipt'];
+    steps.forEach((id) => $(id).classList.remove('done', 'doing'));
+    const d = entry.data || {};
+    $('st-discover-det').textContent = `GET ${d.to ?? ''} → 402 · ${d.amount} USD₮`;
+    $('st-sign-det').textContent = 'signed on-device · keys never left';
+    $('st-receipt-det').textContent = d.txHash ? `tx ${short(d.txHash)}` : 'resource received';
+    let i = 0;
+    const tick = () => {
+      if (i > 0) { $(steps[i - 1]).classList.remove('doing'); $(steps[i - 1]).classList.add('done'); }
+      if (i < steps.length) { $(steps[i]).classList.add('doing'); i++; setTimeout(tick, 260); }
+      else showFlash(false, `✓ ${d.operation === 'buy_pick' ? 'PICK BOUGHT' : 'TIP SENT'} · ${d.amount} USD₮ · tx ${short(d.txHash)}`, d.explorerUrl);
+    };
+    tick();
+  }
+  function playBlocked(entry) {
+    const d = entry.data || {};
+    showFlash(true, `⛔ BLOCKED · PolicyViolationError — ${d.reason} (${d.amount} USD₮)`);
+    // Escape rule/reason: even though they're our own policy strings today,
+    // treat everything rendered as untrusted so a hostile jar can never inject.
+    $('g-verdict').innerHTML = `last policy verdict: <span style="color:var(--blocked)">DENY</span> · ${esc(d.ruleName ?? d.reason ?? '')}`;
+  }
+  function showFlash(blocked, text, link) {
+    const f = $('flash');
+    clearTimeout(flashTimer);
+    f.className = 'sent-flash show' + (blocked ? ' blocked' : '');
+    const url = safeUrl(link);
+    f.innerHTML = url ? `${esc(text)} · <a href="${esc(url)}" target="_blank" rel="noreferrer">explorer ↗</a>` : esc(text);
+    flashTimer = setTimeout(() => f.classList.remove('show'), 60000);
+  }
+  function short(h) { return h && h.length > 14 ? h.slice(0, 8) + '…' + h.slice(-6) : (h ?? ''); }
+  // Security helpers — everything from the SSE feed (incl. a third-party tip
+  // jar's receipt) is treated as untrusted before it touches innerHTML.
+  function esc(t) { return escapeHtml(String(t ?? '')); }
+  function safeUrl(u) { return typeof u === 'string' && /^https?:\/\//i.test(u) ? u : null; }
+
+  // ── history table ──
+  function addHistory(entry) {
+    $('hist-empty').style.display = 'none';
+    const d = entry.data || {};
+    const tr = document.createElement('tr');
+    tr.className = entry.kind === 'payment' ? 'pay' : 'blk';
+    const url = safeUrl(d.explorerUrl);
+    const tx = url
+      ? `<a class="tx" href="${esc(url)}" target="_blank" rel="noreferrer">${esc(short(d.txHash))} ↗</a>`
+      : `<span class="mono">${esc(short(d.txHash)) || '—'}</span>`;
+    tr.innerHTML = `<td class="mono">${esc(d.minute ?? '')}'</td><td><span class="amt">${esc(d.amount ?? '')}</span></td><td>${esc(entry.text)}</td><td>${entry.kind === 'payment' ? tx : '<span class="mono">refused pre-signature</span>'}</td>`;
+    $('hist-body').appendChild(tr);
+  }
+  function escapeHtml(t) { const el = document.createElement('span'); el.textContent = t; return el.innerHTML; }
+
+  // ── SSE feed ──
+  const es = new EventSource('/events');
+  es.addEventListener('entry', (ev) => {
+    const entry = JSON.parse(ev.data);
+    addLine(entry.kind, prefix(entry.kind) + entry.text);
+    if (entry.kind === 'payment') { playPayment(entry); addHistory(entry); }
+    if (entry.kind === 'blocked') { playBlocked(entry); addHistory(entry); }
+    if (entry.kind === 'payment') $('g-verdict').innerHTML = 'last policy verdict: <span style="color:var(--money)">ALLOW</span> · within-session-cap';
+  });
+  es.addEventListener('state', (ev) => renderState(JSON.parse(ev.data)));
+  es.onerror = () => { $('hdr-mode').textContent = 'stream disconnected — session over or agent not running'; };
+  function prefix(kind) {
+    return { info: '· ', reasoning: '', decision: '✋ ', payment: '✅ ', blocked: '⛔ ', error: '✖ ' }[kind] ?? '';
+  }
+</script>
+</body>
+</html>

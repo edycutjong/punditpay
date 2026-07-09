@@ -1,6 +1,6 @@
 <div align="center">
-  <img src="docs/assets/icon-512.png" width="144" height="144" alt="PunditPay">
-  <h1>PunditPay ⚽</h1>
+  <img src="docs/assets/icon-animated.svg" width="144" height="144" alt="PunditPay">
+  <h1>PunditPay ⚽💵</h1>
   <p><em>The on-device AI agent that rewards great football commentary with its own money — and can prove it never overspends.</em></p>
   <img src="docs/assets/readme-hero-animated.svg" alt="PunditPay — on-device agent, self-custodial keys, x402 tips" width="100%">
 

@@ -9,7 +9,9 @@
   [![Watch the 3-min demo](https://img.shields.io/badge/▶_Watch-3--min_demo-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://youtu.be/cMbJLGaXcdQ)
   [![Landing](https://img.shields.io/badge/🌐_Landing-Page-06b6d4?style=for-the-badge)](https://edycutjong.github.io/punditpay/landing)
   [![Pitch Deck](https://img.shields.io/badge/📊_Pitch-Deck-7C3AED?style=for-the-badge)](https://edycutjong.github.io/punditpay/docs/pitch)
+
   [![Tether Developers Cup](https://img.shields.io/badge/DoraHacks-Tether_Developers_Cup-8b5cf6?style=for-the-badge)](https://dorahacks.io/hackathon/tether-developers-cup)
+  ![Track](https://img.shields.io/badge/Track-QVAC_×_WDK-06b6d4?style=for-the-badge)
 
   <br/>
 
@@ -18,6 +20,7 @@
   ![x402](https://img.shields.io/badge/x402-USD₮_over_HTTP-26A17B?style=flat)
   ![Node 20+](https://img.shields.io/badge/Node.js-%E2%89%A520-339933?style=flat&logo=node.js&logoColor=white)
   ![Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue?style=flat)
+  
   ![268 tests](https://img.shields.io/badge/tests-268_passing-brightgreen?style=flat)
   [![CI/CD Pipeline](https://github.com/edycutjong/punditpay/actions/workflows/ci.yml/badge.svg)](https://github.com/edycutjong/punditpay/actions/workflows/ci.yml)
 </div>

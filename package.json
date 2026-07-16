@@ -27,7 +27,7 @@
     "ci": "npm run lint && npm test && npm run coverage && npm run verify:offline && npm run check:readiness"
   },
   "dependencies": {
-    "@qvac/sdk": "0.14.1",
+    "@qvac/sdk": "0.15.0",
     "@tetherto/wdk": "1.0.0-beta.14",
     "@tetherto/wdk-wallet-spark": "1.0.0-beta.22"
   },

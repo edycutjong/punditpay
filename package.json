@@ -29,7 +29,7 @@
   "dependencies": {
     "@qvac/sdk": "0.16.0",
     "@tetherto/wdk": "1.0.0-beta.16",
-    "@tetherto/wdk-wallet-spark": "1.0.0-beta.22"
+    "@tetherto/wdk-wallet-spark": "1.0.0-beta.23"
   },
   "keywords": [
     "qvac",
